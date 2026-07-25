@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+    tools {
+    jdk 'Java_21'
+    maven 'Maven_3.9.16'
+    }
+    stages{
+        stage('Compile'){
+            steps {
+                echo "in compilation stage"
+                git 'https://github.com/gabrielf/maven-samples'
+                sh '/opt/maven/bin/mvn clean'
+                sh '/opt/maven/bin/mvn compile'
+            }
+        }
+        stage('Code Review'){
+            steps{
+                echo "in Code Review stage"
+                sh '/opt/maven/bin/mvn -P metrics pmd:pmd'
+            }
+            post {
+                success {
+                recordIssues sourceCodeRetention: 'LAST_BUILD', tools: [pmdParser()]
+                }
+            }
+        }
+        stage('Unit Test'){
+            steps{
+                echo "in Unit Testing stage"
+                sh '/opt/maven/bin/mvn test'
+            }
+            post {
+                success {
+                    junit '**/**.xml'
+                }
+            }
+        }
+        stage('Code Coverage'){
+            steps{
+                echo "in Code Coverage step"
+                sh '/opt/maven/bin/mvn verify'
+            }
+            post {
+                success {
+                    jacoco()
+                }
+            }
+        }
+        stage('Package'){
+            steps{
+                echo "in Packaging step"
+                sh '/opt/maven/bin/mvn package'
+            }
+            post{
+                success{
+                    archiveArtifacts artifacts: '**/**.war', followSymlinks: false
+                }
+            }
+        }
+    }
+}
