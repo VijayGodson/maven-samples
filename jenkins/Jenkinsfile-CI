@@ -16,7 +16,7 @@ pipeline {
         stage('Code Review'){
             steps{
                 echo "in Code Review stage"
-                sh '/opt/maven/bin/mvn -P metrics pmd:pmd -Dmaven.site.skip=true'
+                sh '/opt/maven/bin/mvn -P pmd:pmd -Dmaven.site.skip=true'
             }
             post {
                 success {
