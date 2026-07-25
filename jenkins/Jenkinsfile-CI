@@ -8,7 +8,7 @@ pipeline {
         stage('Compile'){
             steps {
                 echo "in compilation stage"
-                git 'https://github.com/gabrielf/maven-samples'
+                git 'https://github.com/VijayGodson/maven-samples'
                 sh '/opt/maven/bin/mvn clean'
                 sh '/opt/maven/bin/mvn compile'
             }
